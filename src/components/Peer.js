@@ -1,44 +1,55 @@
 import React, { useRef, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 
 function Peer({ isSelf, peerId, peerData, roomClient }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    if (isSelf && videoRef.current && roomClient?.streamHandler?.stream) {
-      videoRef.current.srcObject = roomClient.streamHandler.stream;
+    if (videoRef.current) {
+      if (isSelf && roomClient?.streamHandler?.stream) {
+        // Self video uses MediaStream
+        videoRef.current.srcObject = roomClient.streamHandler.stream;
+      } else if (!isSelf && peerData?.video?.src) {
+        // Remote or "fake" peer uses file path
+        videoRef.current.src = peerData.video.src;
+        console.log('Peer video src:', peerData.video.src);
+      }
     }
-  }, [isSelf, roomClient]);
+  }, [isSelf, roomClient, peerData]);
 
   return (
     <Stack
       spacing={0}
       sx={{
+        width: '100%',
+        height: '100%',
         border: '2px solid red',
         borderRadius: 2,
         overflow: 'hidden',
-        width: '100%', // Container width is relative to its parent
       }}
     >
-      {/* Top blue bar with peerId */}
-      <Stack
+      {/* Top bar */}
+      <Box
         sx={{
           backgroundColor: 'blue',
           color: 'white',
-          padding: 1,
           textAlign: 'center',
           fontSize: 14,
           fontWeight: 'bold',
+          p: 1,
         }}
       >
         {peerId}
-      </Stack>
-      {/* Responsive video feed container maintaining a 4:3 aspect ratio */}
-      <Stack
+      </Box>
+
+      {/* Video area fills remaining space */}
+      <Box
         sx={{
+          flex: 1,
           position: 'relative',
-          width: '100%', // Fills parent's width
-          paddingTop: '75%', // 480/640 = 0.75 (75%) to maintain a 4:3 aspect ratio
+          width: '100%',
+          height: '100%',
         }}
       >
         <video
@@ -50,13 +61,14 @@ function Peer({ isSelf, peerId, peerData, roomClient }) {
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '100%', // Fills the container's width
-            height: '100%', // Fills the container's height
+            width: '100%',
+            height: '100%',
             background: '#333',
-            transform: 'scaleX(-1)', // Mirror effect for self-view
+            transform: isSelf ? 'scaleX(-1)' : 'none', // Mirror self
+            objectFit: 'cover', // or 'contain', depending on preference
           }}
         />
-      </Stack>
+      </Box>
     </Stack>
   );
 }
