@@ -13,7 +13,7 @@ function VideoRoom({ roomClient }) {
     return () => {
       roomClient.leaveRoom();
     };
-  }, [roomClient]);
+  }, [roomClient, roomId]);
 
   return <Peers roomClient={roomClient} />;
 }
