@@ -26,7 +26,8 @@ function Peer({
         videoRef.current.srcObject = stream;
       } else if (!isSelf && peerData?.video?.src) {
         // Remote or "fake" peer uses a file path
-        videoRef.current.src = peerData.video.src;
+        const publicSrc = process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '';
+        videoRef.current.src = publicSrc + peerData.video.src;
       }
     }
   }, [isSelf, stream, peerData]);
