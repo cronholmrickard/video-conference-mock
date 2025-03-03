@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/video-conference-mock/static/js/main.fe5d04c1.js",
+    "main.js": "/video-conference-mock/static/js/main.a4498fca.js",
     "static/js/453.f84700cf.chunk.js": "/video-conference-mock/static/js/453.f84700cf.chunk.js",
     "index.html": "/video-conference-mock/index.html",
-    "main.fe5d04c1.js.map": "/video-conference-mock/static/js/main.fe5d04c1.js.map",
+    "main.a4498fca.js.map": "/video-conference-mock/static/js/main.a4498fca.js.map",
     "453.f84700cf.chunk.js.map": "/video-conference-mock/static/js/453.f84700cf.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.fe5d04c1.js"
+    "static/js/main.a4498fca.js"
   ]
 }
