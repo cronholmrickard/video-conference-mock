@@ -6,6 +6,15 @@ import Peer from './Peer';
 function Peers({ roomClient }) {
   const { userId } = useSelector((state) => state.user);
   const { peers } = useSelector((state) => state.room);
+  const { peersMuted, raisedHands } = useSelector((state) => state.member);
+
+  const toggleMuted = (peerId) => {
+    roomClient.toggleMutePeer(peerId);
+  };
+
+  const toggleRaiseHand = (peerId) => {
+    roomClient.toggleRaiseHand(peerId);
+  };
 
   return (
     <Box
@@ -24,7 +33,7 @@ function Peers({ roomClient }) {
           gridTemplateRows: 'repeat(2, 1fr)', // 2 rows
           width: '80vw',
           height: '80vh',
-          backgroundColor: 'black',
+          backgroundColor: 'red',
           p: 2,
           borderRadius: 2,
           gap: 2, // spacing between grid cells
@@ -36,7 +45,13 @@ function Peers({ roomClient }) {
               peerId={peerId}
               isSelf={userId === peerId}
               peerData={peerData}
-              roomClient={roomClient}
+              stream={
+                userId === peerId ? roomClient.streamHandler.stream : null
+              }
+              toggleMuted={toggleMuted}
+              muted={peersMuted[peerId]}
+              toggleRaiseHand={toggleRaiseHand}
+              raisedHand={raisedHands[peerId]}
             />
           </Box>
         ))}

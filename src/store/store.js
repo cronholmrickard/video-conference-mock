@@ -8,9 +8,9 @@ export default configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these action types
-        ignoredActions: ['room/addPeer'],
+        ignoredActions: ['room/addPeer', 'member/togglePeerMuted'],
         // Ignore these paths in the state
-        ignoredPaths: ['room.peers'],
+        ignoredPaths: ['room.peers', 'member.peersMuted'],
       },
     }),
   reducer: {

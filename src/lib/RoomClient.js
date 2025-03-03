@@ -3,7 +3,12 @@ import logger from '../utils/logger';
 import StreamHandler from './StreamHandler';
 import store from '../store/store';
 import { setUserId, setRoomId } from '../store/slices/userSlice';
-import { addMember, removeMember } from '../store/slices/memberSlice';
+import {
+  addMember,
+  removeMember,
+  togglePeerMuted,
+  toggleRaiseHand,
+} from '../store/slices/memberSlice';
 import { addPeer, removePeer } from '../store/slices/roomSlice';
 
 class RoomClient {
@@ -22,7 +27,7 @@ class RoomClient {
       this.userId = userId;
       logger.info(`${userId} joining room ${roomId}`);
       store.dispatch(setUserId(userId));
-      store.dispatch(addMember());
+      store.dispatch(addMember(userId));
       store.dispatch(
         addPeer({ peerId: userId, kind: 'video', data: { src: null } }),
       );
@@ -46,7 +51,7 @@ class RoomClient {
         store.dispatch(
           addPeer({ peerId: newPeerName, kind: 'video', data: { src } }),
         );
-        store.dispatch(addMember());
+        store.dispatch(addMember(newPeerName));
         logger.info(`Added peer ${newPeerName} with video ${src}`);
         this.otherPeerIndex++;
       } else {
@@ -56,9 +61,17 @@ class RoomClient {
     }, 5000);
   }
 
+  toggleMutePeer(peerId) {
+    store.dispatch(togglePeerMuted(peerId));
+  }
+
+  toggleRaiseHand(peerId) {
+    store.dispatch(toggleRaiseHand(peerId));
+  }
+
   leaveRoom() {
     logger.info('Leaving room');
-    store.dispatch(removeMember());
+    store.dispatch(removeMember(this.userId));
     store.dispatch(removePeer({ peerId: this.userId }));
     this.streamHandler.stop();
     logger.info('Stream stopped');

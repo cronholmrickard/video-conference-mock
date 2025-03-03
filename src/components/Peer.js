@@ -1,22 +1,35 @@
 import React, { useRef, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import PanToolIcon from '@mui/icons-material/PanTool'; // Raised hand
+import PanToolOutlinedIcon from '@mui/icons-material/PanToolOutlined'; // Hand not raised (or a subtle version)
 
-function Peer({ isSelf, peerId, peerData, roomClient }) {
+function Peer({
+  isSelf,
+  peerId,
+  peerData,
+  stream,
+  toggleMuted,
+  muted,
+  toggleRaiseHand,
+  raisedHand,
+}) {
   const videoRef = useRef(null);
 
   useEffect(() => {
     if (videoRef.current) {
-      if (isSelf && roomClient?.streamHandler?.stream) {
+      if (isSelf && stream) {
         // Self video uses MediaStream
-        videoRef.current.srcObject = roomClient.streamHandler.stream;
+        videoRef.current.srcObject = stream;
       } else if (!isSelf && peerData?.video?.src) {
-        // Remote or "fake" peer uses file path
+        // Remote or "fake" peer uses a file path
         videoRef.current.src = peerData.video.src;
-        console.log('Peer video src:', peerData.video.src);
       }
     }
-  }, [isSelf, roomClient, peerData]);
+  }, [isSelf, stream, peerData]);
 
   return (
     <Stack
@@ -24,7 +37,7 @@ function Peer({ isSelf, peerId, peerData, roomClient }) {
       sx={{
         width: '100%',
         height: '100%',
-        border: '2px solid red',
+        border: '2px solid white',
         borderRadius: 2,
         overflow: 'hidden',
       }}
@@ -56,6 +69,7 @@ function Peer({ isSelf, peerId, peerData, roomClient }) {
           ref={videoRef}
           autoPlay
           muted={isSelf}
+          loop={!isSelf}
           playsInline
           style={{
             position: 'absolute',
@@ -64,10 +78,46 @@ function Peer({ isSelf, peerId, peerData, roomClient }) {
             width: '100%',
             height: '100%',
             background: '#333',
-            transform: isSelf ? 'scaleX(-1)' : 'none', // Mirror self
-            objectFit: 'cover', // or 'contain', depending on preference
+            transform: isSelf ? 'scaleX(-1)' : 'none', // Mirror effect for self-view
+            objectFit: 'cover',
           }}
         />
+      </Box>
+
+      {/* Bottom bar with mute toggle button */}
+      <Box
+        sx={{
+          backgroundColor: 'blue',
+          color: 'white',
+          textAlign: 'center',
+          p: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <IconButton
+          onClick={() => {
+            toggleMuted(peerId);
+          }}
+        >
+          {muted ? (
+            <VolumeOffIcon sx={{ color: 'white' }} />
+          ) : (
+            <VolumeUpIcon sx={{ color: 'white' }} />
+          )}
+        </IconButton>
+        <IconButton
+          onClick={() => {
+            toggleRaiseHand(peerId);
+          }}
+        >
+          {raisedHand ? (
+            <PanToolIcon sx={{ color: 'red' }} />
+          ) : (
+            <PanToolOutlinedIcon sx={{ color: 'white' }} />
+          )}
+        </IconButton>
       </Box>
     </Stack>
   );
