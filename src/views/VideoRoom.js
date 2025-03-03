@@ -1,10 +1,21 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { withRoomContext } from '../lib/RoomClientContext';
+import Peers from '../components/Peers';
 
-function VideoRoom() {
+function VideoRoom({ roomClient }) {
   const { roomId } = useParams();
-  return <div>{roomId}</div>;
+  useEffect(() => {
+    if (!roomId) return;
+    (async () => {
+      roomClient.joinRoom(roomId);
+    })();
+    return () => {
+      roomClient.leaveRoom();
+    };
+  }, [roomClient]);
+
+  return <Peers roomClient={roomClient} />;
 }
 
 const VideoRoomWrapper = ({ roomClient }) => {
